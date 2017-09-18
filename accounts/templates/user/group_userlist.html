@@ -1,0 +1,67 @@
+{% extends "public/layout.html" %}
+
+{% block body %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+           <th>用户名</th>
+           <th>email</th>
+           <th>状态</th>
+           <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user_obj in object_list %}
+        <tr>
+            <td>{{ user_obj.username }}</td>
+            <td>{{ user_obj.email }}</td>
+            <td class="status">
+                {% if user_obj.is_active %}
+                    <span class="glyphicon glyphicon-ok-circle text-success"></span>正常
+                {% else %}
+                    <span class="glyphicon glyphicon-warning-sign text-warning"></span>禁止
+                {% endif %}
+            </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger delete" data="{{ user_obj.id }}">从组内删除</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block js %}
+    <script>
+    $(function(){
+        $(".delete").click(function(){
+            var click_obj = $(this)
+            var uid = click_obj.attr("data");
+            var gid = "{{ gid }}";
+
+            $.ajax({
+                url: "{% url 'user_modify_group' %}",
+                type: "delete",
+                data: {"uid": uid, "gid":gid},
+                success: function (res) {
+                    if (res.status != 0){
+                        swal("操作失败", res.errmsg, "error")
+                    }else{
+                        click_obj.parents("tr").remove();
+                        swal("操作成功", '', "success")
+                    }
+                },
+                beforeSend: function (xhr, settings) {
+                    var csrftoken = getCookie('csrftoken');
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                    }
+                }
+            });
+
+        })
+    })
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "public/layout.html" %}
+
+{% block body %}
+    <table class="table table-striped">
+    <div class="container-fluid">
+        <div class="row">
+        <caption>
+                <div class="col-md-7">
+                    <a class="btn btn-primary" href="{% url 'permission_create' %}">创建权限</a>
+                </div>
+                <div class="col-md-5">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="exampleInputName2">model</label>
+                            <input type="text" class="form-control" id="exampleInputName2"  {% if search_model %} value="{{ search_model }}" {% else %}  placeholder="模型搜索" {% endif %} name="search_model">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail2">codename</label>
+                            <input type="text" class="form-control" id="exampleInputEmail2" placeholder="权限搜索" name="search_codename">
+                        </div>
+                        <button type="submit" class="btn btn-default">查询</button>
+                    </form>
+                </div>
+        </caption>
+    </div>
+    </div>
+        <tr>
+            <th>#</th>
+            <th>app</th>
+            <th>model</th>
+            <th>codename</th>
+            <th>name</th>
+            <th>操作</th>
+        </tr>
+        {% for permission in object_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ permission.content_type.app_label }}</td>
+                <td>{{ permission.content_type.model }}</td>
+                <td>{{ permission.codename }}</td>
+                <td>{{ permission.name }}</td>
+                <td>
+                    <button class="btn btn-primary">修改</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+<div class="panel-default">
+	<center>
+		<ul class="pagination">
+			<li><a href="{{ request.path }}?page=1{{ search_data }}">首页</a></li>
+			{% if page_obj.has_previous %}
+				<li><a href="{{ request.path }}?page={{ page_obj.previous_page_number }}{{ search_data }}">上一页</a></li>
+			{% else %}
+				<li class="previous disabled"><a>上一页</a></li>
+			{% endif %}
+
+			{% for i in paginator.page_range %}
+				<li {% if page_obj.number == i %}class="active"{% endif %}><a href="{{ request.path }}?page={{ i }}{{ search_data }}">{{ i }}</a></li>
+			{% endfor %}
+
+			{% if page_obj.has_next %}
+				<li><a href="{{ request.path }}?page={{ page_obj.next_page_number }}{{ search_data }}">下一页</a></li>
+			{% else %}
+				<li class="previous disabled"><a>下一页</a></li>
+			{% endif %}
+			<li><a href="{{ request.path }}?page={{ page_obj.paginator.num_pages }}{{ search_data }}">末页</a></li>
+		</ul>
+	</center>
+</div>
+
+
+
+
+{% endblock %}

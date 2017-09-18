@@ -1,0 +1,36 @@
+{% extends "public/layout.html" %}
+
+{% block body %}
+    <table class="table table-striped">
+        <caption>
+            {% if perms.resources.add_idc %}
+            <a  href="{% url 'idc_add' %}" class="btn btn-primary" id="add_group">创建idc</a>
+            {% endif %}
+        </caption>
+        <tr>
+            <th>#</th>
+            <th>简称</th>
+            <th>idc名称</th>
+            <th>地址</th>
+            <th>电话</th>
+            <th>email</th>
+            <th>联系人</th>
+            <th>操作</th>
+        </tr>
+        {% for idc_obj in object_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ idc_obj.name }}</td>
+                <td>{{ idc_obj.idc_name }}</td>
+                <td>{{ idc_obj.address }}</td>
+                <td>{{ idc_obj.phone }}</td>
+                <td>{{ idc_obj.email }}</td>
+                <td>{{ idc_obj.username }}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm">删除</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+

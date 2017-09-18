@@ -1,0 +1,219 @@
+{% extends "public/layout.html" %}
+
+{% block body %}
+    <table class="table table-striped">
+        <caption>
+            <button type="button", class="btn btn-default" id="add_group">创建用户组</button>
+        </caption>
+        <tr>
+            <th>#</th>
+            <th>组名</th>
+            <th>操作</th>
+        </tr>
+        {% for group_obj in object_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ group_obj.name }}</td>
+                <td>
+                    <a type="button" class="btn btn-primary btn-sm" href="{% url 'group_userlist' %}?gid={{ group_obj.id }}" >成员列表</a>
+                    <button type="button" class="btn btn-success btn-sm show_group_permission">查看权限</button>
+                    <a  class="btn btn-info btn-sm" href="{% url 'group_permission_modify' %}?gid={{ group_obj.id }}">修改权限</a>
+                    <button type="button" class="btn btn-danger btn-sm del_group" groupid="{{ group.id }}">删除</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+<div class="modal fade" id="create_group" aria-hidden="true">
+	<div class="modal-dialog">
+	    <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4>添加group</h4>
+            </div>
+            <div class="modal-body form-inline">
+                <div class="form-group">
+                    <label for="exampleInputName2">用户组：</label>
+                    <input type="text" class="form-control" id="form_groupname" placeholder="请输入用户组名称" />
+                </div>
+                <button class="btn btn-primary" id="create_group_btn">提交</button>
+            </div>
+            <div class="modal-footer">
+                <input class="btn btn-default" data-dismiss="modal" aria-hidden="true" type="button" value="取消">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="show_permission" aria-hidden="true">
+	<div class="modal-dialog">
+	    <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 id="user_to_group_modal_title"></h4>
+            </div>
+            <div class="modal-body clearfix">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>app</th>
+                        <th>modle</th>
+                        <th>codename</th>
+                        <th>name</th>
+                    </tr>
+                </thead>
+                <tbody id="all_permissons">
+
+                </tbody>
+
+            </table>
+
+            </div>
+            <div class="modal-footer">
+
+                <input class="btn btn-default" data-dismiss="modal" aria-hidden="true" type="button" value="取消">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            //创建用户组
+            $("#add_group").click(function(){
+                var create_group_modal = $("#create_group");
+                create_group_modal.modal("show");
+
+                $("#create_group_btn").click(function(){
+                    var form_groupname_input = $("#form_groupname");
+                    var group_name = form_groupname_input.val();
+                    form_groupname_input.val("");
+
+
+                    if (group_name == ""){
+                        swal("添加失败", "用户组名不能为空", "error");
+                        return false
+                    }
+                    create_group_modal.modal("hide");
+                    $.ajax({
+                    url: "{% url 'group_create' %}",
+                    type: "post",
+                    data: {"name": group_name},
+                    success: function (res) {
+                        if (res.status == 0){
+                            swal({
+                                "title": "用户组添加成功",
+                                "text": "",
+                                "type": "success"
+                            }, function(){
+                                setTimeout(function(){
+                                    window.location.reload();
+                                },100)
+
+                            });
+                        }else{
+                            swal("操作失败", res.errmsg, "error");
+
+                        }
+
+                    },
+                    beforeSend: function (xhr, settings) {
+                        var csrftoken = getCookie('csrftoken');
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                        }
+                    }
+                })
+                })
+            })
+        })
+
+            //查看用户权限
+        $(function () {
+            $(".show_group_permission").click(function () {
+                //console.log($(this).parents("tr").find("td:eq(1)").text())
+                var group_name = $(this).parents("tr").find("td:eq(1)").text()
+                $.ajax({
+                    type:"get",
+                    url:"{% url 'group_permission_show' %}",
+                    data:{"name": group_name},
+                    success: function(res){
+                        //console.log(res)
+                        if(res.status == 0){
+                            //console.log(res)
+                            var show_permission_modal = $("#show_permission");
+                            var html
+                            $.each(res.permission_list,function(i,obj){
+                                html +="<tr><td>"+ i+ "</td> <td>"+obj.app+"</td><td>"+obj.model+"</td><td>"+obj.codename+"</td><td>"+ obj.name +"</td></tr>"
+                            })
+                            $("#all_permissons").html(html)
+                            show_permission_modal.modal("show");
+                        }else {
+                            swal("查询异常")
+                        }
+
+                    },
+                    beforeSend: function (xhr, settings) {
+                        var csrftoken = getCookie('csrftoken');
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                        }
+                    },
+                })
+
+
+
+            })
+        })
+
+        $(function(){
+            $(".del_group").click(function () {
+                var group_tr = $(this).parents("tr")
+                var group_name = group_tr.find("td:eq(1)").text()
+            swal({
+              title: "删除组",
+              text: "确定要删除"+ group_name +"组吗？",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Yes, delete it!",
+              closeOnConfirm: false
+            },
+            function(){
+                $.ajax({
+                    type:"delete",
+                    url:"{% url 'group_permission_delete' %}",
+                    data:{"name": group_name},
+                    success: function(res){
+                        console.log(res)
+                        if(res.status == 0){
+                            swal(group_name+"组删除成功")
+                            group_tr.remove()
+                        }else {
+                            swal(res.errmsg)
+                        }
+                    },
+                    beforeSend: function (xhr, settings) {
+                        var csrftoken = getCookie('csrftoken');
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                        }
+                    },})
+            });
+            })
+        })
+
+
+
+    </script>
+{% endblock %}
