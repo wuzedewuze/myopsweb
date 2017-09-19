@@ -5,20 +5,20 @@
 <table class="table table-striped">
     <caption>
         <div class="col-md-1">
-            <button class="btn btn-primary" id="create-user-id">新增发布</button>
+            <button class="btn btn-primary" id="create-issue">新增发布</button>
         </div>
         <div class="col-md-10">
             <form class="form-inline">
                 <!--工程名查询-->
               <div class="form-group">
                 <label for="exampleInputName2">工程名</label>
-                <input type="text" class="form-control" id="exampleInputName2" placeholder="工程名搜索">
+                <input type="text" class="form-control" id="exampleInputName2" placeholder="工程名搜索" name="search_project" value="{{ search_project }}">
               </div>
                 <!--开始时间-->
 			  <div class="form-group">
                 <label for="dtp_input2" class="control-label">开始时间</label>
                 <div class="input-group date form_date " data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
-                    <input class="form-control" size="17" type="text" value="" readonly name="start_date">
+                    <input class="form-control" size="17" type="text" value="{{ start_date }}" readonly name="start_date">
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
 					<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                 </div>
@@ -28,7 +28,7 @@
               <div class="form-group">
                 <label for="dtp_input2" class="control-label">结束时间</label>
                 <div class="input-group date form_date " data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
-                    <input class="form-control" size="17" type="text" value="" name="end_date" readonly>
+                    <input class="form-control" size="17" type="text" value="{{ end_date }}" name="end_date" readonly>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
 					<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                 </div>
@@ -53,6 +53,7 @@
             <th>发布状态</th>
             <th>发布时间</th>
             <th>svn路径</th>
+            <th>备注</th>
             <th>操作</th>
         </tr>
     </thead>
@@ -65,23 +66,140 @@
           <td>{{ object.dev_person }}</td>
           <td>{{ object.test_person }}</td>
           <td>{{ object.issue_person }}</td>
-          <td>{{ object.issue_status }}</td>
+            <td class="status">
+                {% if object.issue_status == "1" %}
+                    <span class="glyphicon glyphicon-ok-circle text-success"></span>已发布
+                {% elif object.issue_status == "0" %}
+                    <span class="glyphicon glyphicon-warning-sign text-warning"></span>待发布
+                {% elif object.issue_status == "2" %}
+                    <span class="glyphicon glyphicon-warning-sign text-danger"></span>已回滚
+                {% endif %}
+            </td>
           <td>{{ object.issue_time|date:"Y-m-d H:i:s" }}</td>
           <td>{{ object.svn_path }}</td>
-          <td>发布、回退</td>
+          <td>{{ object.remark}}</td>
+          <td>
+                <div class="btn-group">
+                    {% if object.issue_status == "1" %}
+                        <button type="button" class="btn btn-sm btn-warning modify_user_status" data="{{ object.id }}">回滚</button>
+                    {% else %}
+                        <button type="button" class="btn btn-info btn-sm modify_user_status"  data="{{ object.id }}">发布</button>
+                    {% endif %}
+                    <button type="button" class="btn btn-sm btn-danger modify_user_status"  data="{{ object.id }}">删除</button>
+                </div>
+          </td>
       </tr>
     {% endfor %}
     </tbody>
 </table>
 
+<!--分页设置-->
+<div class="panel-default">
+	<center>
+		<ul class="pagination">
+			<li><a href="{{ request.path }}?page=1{{ search_data }}">首页</a></li>
+			{% if page_obj.has_previous %}
+				<li><a href="{{ request.path }}?page={{ page_obj.previous_page_number }}{{ search_data }}">上一页</a></li>
+			{% else %}
+				<li class="previous disabled"><a>上一页</a></li>
+			{% endif %}
+
+			{% for i in page_range %}
+				<li {% if page_obj.number == i %}class="active"{% endif %}><a href="{{ request.path }}?page={{ i }}{{ search_data }}">{{ i }}</a></li>
+			{% endfor %}
+
+			{% if page_obj.has_next %}
+				<li><a href="{{ request.path }}?page={{ page_obj.next_page_number }}{{ search_data }}">下一页</a></li>
+			{% else %}
+				<li class="previous disabled"><a>下一页</a></li>
+			{% endif %}
+			<li><a href="{{ request.path }}?page={{ page_obj.paginator.num_pages }}{{ search_data }}">末页</a></li>
+
+            <li><a>共有{{ paginator.count }}条发布记录</a></li>
+
+		</ul>
+	</center>
+</div>
+
+
+<!--添加发布弹出框-->
+<div class="modal fade" id="create-issue-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">x</button>
+                <h4 id="user_to_group_modal_title"> 新增发布</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <form class="form-horizontal" role="form" parsley-validate id="add_issue_form" method="post">
+                {% csrf_token %}
+                    <div class="form-group">
+                        <label for="project_name" class="col-sm-2 control-label">工程名*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="project_name" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="project_name" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="issue_content" class="col-sm-2 control-label">发布内容*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="issue_content" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="issue_content" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dev_person" class="col-sm-2 control-label">开发人员*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="dev_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="dev_person" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="test_person" class="col-sm-2 control-label">测试人员*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="test_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="test_person" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="issue_person" class="col-sm-2 control-label">发布人员*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="issue_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="issue_person" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="svn_path" class="col-sm-2 control-label">svn路径*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="svn_path" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="svn_path" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="remark" class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="remark" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="remark" >
+                        </div>
+                    </div>
+                   <div class="form-group form-footer">
+                     <div class="col-sm-offset-4 col-sm-8">
+                     <button type="submit" class="btn btn-primary">提交</button>
+                     <button type="reset" class="btn btn-default">重置</button>
+                     </div>
+                   </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input class="btn btn-default" data-dismiss="modal" aria-hidden="true" type="button" value="取消">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
 {% endblock %}
 
 {% block js %}
 <script>
-
-
     //日历js
-	$('.form_date').datetimepicker({
+  $('.form_date').datetimepicker({
         language:  'zh-CN',
         weekStart: 1,
         todayBtn:  1,
@@ -90,6 +208,36 @@
 		startView: 2,
 		minView: 2,
 		forceParse: 0
-    });
+  });
+
+  // 新增发布模态框展示
+  $("#create-issue").click(function(){
+      var createmodal=$("#create-issue-modal");
+      createmodal.modal("show");
+  })
+
+  // 新增发布提交
+  $('#add_issue_form').on('submit',function(){
+    var str = $('#add_issue_form').serialize();
+    console.log(str)
+
+    $.ajax({
+        url:"#",
+        type:"post",
+        data:str,
+        success: function (res) {
+            if(res.status == 0){
+                window.location.reload()
+            }
+        }
+
+
+    })
+
+    return false;
+})
+
+  //
+
 </script>
 {% endblock %}
