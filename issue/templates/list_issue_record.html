@@ -1,0 +1,95 @@
+{% extends "public/layout.html" %}
+
+
+{%  block body %}
+<table class="table table-striped">
+    <caption>
+        <div class="col-md-1">
+            <button class="btn btn-primary" id="create-user-id">新增发布</button>
+        </div>
+        <div class="col-md-10">
+            <form class="form-inline">
+                <!--工程名查询-->
+              <div class="form-group">
+                <label for="exampleInputName2">工程名</label>
+                <input type="text" class="form-control" id="exampleInputName2" placeholder="工程名搜索">
+              </div>
+                <!--开始时间-->
+			  <div class="form-group">
+                <label for="dtp_input2" class="control-label">开始时间</label>
+                <div class="input-group date form_date " data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                    <input class="form-control" size="17" type="text" value="" readonly name="start_date">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+					<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                </div>
+				<input type="hidden" id="dtp_input2" value="" /><br/>
+              </div>
+                <!--结束时间-->
+              <div class="form-group">
+                <label for="dtp_input2" class="control-label">结束时间</label>
+                <div class="input-group date form_date " data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                    <input class="form-control" size="17" type="text" value="" name="end_date" readonly>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+					<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                </div>
+				<input type="hidden" id="dtp_input3" value="" /><br/>
+              </div>
+            <button type="submit" class="btn btn-primary">查询</button>
+          </form>
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-primary" >导出excel</button>
+        </div>
+
+    </caption>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>工程名</th>
+            <th>发布内容</th>
+            <th>开发人员</th>
+            <th>测试人员</th>
+            <th>发布人员</th>
+            <th>发布状态</th>
+            <th>发布时间</th>
+            <th>svn路径</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for object in object_list %}
+      <tr>
+          <td>{{ forloop.counter}}</td>
+          <td>{{ object.project_name }}</td>
+          <td>{{ object.issue_content }}</td>
+          <td>{{ object.dev_person }}</td>
+          <td>{{ object.test_person }}</td>
+          <td>{{ object.issue_person }}</td>
+          <td>{{ object.issue_status }}</td>
+          <td>{{ object.issue_time|date:"Y-m-d H:i:s" }}</td>
+          <td>{{ object.svn_path }}</td>
+          <td>发布、回退</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block js %}
+<script>
+
+
+    //日历js
+	$('.form_date').datetimepicker({
+        language:  'zh-CN',
+        weekStart: 1,
+        todayBtn:  1,
+		autoclose: 1,
+		todayHighlight: 1,
+		startView: 2,
+		minView: 2,
+		forceParse: 0
+    });
+</script>
+{% endblock %}
