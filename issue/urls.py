@@ -7,6 +7,6 @@ urlpatterns = [
         url(r'add/$', views.AddIssueView.as_view(), name="issue_record_add"),
         url(r'delete/$', views.DeleteIssueView.as_view(), name="issue_record_delete"),
         url(r'change/$',views.ChangeIssueStatusView.as_view(), name="issue_record_change"),
-        url(r'test/$',views.big_file_download,name="test_export"),
+        url(r'download/$',views.DownLoadExcelView.as_view(),name="download_excel"),
     ]))
 ]
