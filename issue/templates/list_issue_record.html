@@ -8,7 +8,7 @@
             <button class="btn btn-primary" id="create-issue">新增发布</button>
         </div>
         <div class="col-md-10">
-            <form class="form-inline">
+            <form class="form-inline" id="select_form">
                 <!--工程名查询-->
               <div class="form-group">
                 <label for="exampleInputName2">工程名</label>
@@ -38,7 +38,7 @@
           </form>
         </div>
         <div class="col-md-1">
-            <button class="btn btn-primary" >导出excel</button>
+            <button class="btn btn-primary" id="export_exel" >导出excel</button>
         </div>
 
     </caption>
@@ -81,11 +81,11 @@
           <td>
                 <div class="btn-group">
                     {% if object.issue_status == "1" %}
-                        <button type="button" class="btn btn-sm btn-warning modify_user_status" data="{{ object.id }}">回滚</button>
+                        <button type="button" class="btn btn-sm btn-warning modify_issue_status" data="{{ object.id }}">回滚</button>
                     {% else %}
-                        <button type="button" class="btn btn-info btn-sm modify_user_status"  data="{{ object.id }}">发布</button>
+                        <button type="button" class="btn btn-info btn-sm modify_issue_status"  data="{{ object.id }}">发布</button>
                     {% endif %}
-                    <button type="button" class="btn btn-sm btn-danger modify_user_status"  data="{{ object.id }}">删除</button>
+                    <button type="button" class="btn btn-sm btn-danger delete_issue"  data="{{ object.id }}">删除</button>
                 </div>
           </td>
       </tr>
@@ -222,7 +222,7 @@
     console.log(str)
 
     $.ajax({
-        url:"#",
+        url:"{% url 'issue_record_add' %}",
         type:"post",
         data:str,
         success: function (res) {
@@ -230,14 +230,85 @@
                 window.location.reload()
             }
         }
-
-
     })
 
     return false;
 })
 
-  //
+  // 删除发布项目
+  $('.delete_issue').click(function () {
+      var but_obj = $(this);
+      var issue_id = but_obj.attr("data")
+
+      $.ajax({
+          type:"delete",
+          data:{"id":issue_id},
+          url:"{% url 'issue_record_delete' %}",
+          success: function (res) {
+              if(res.status == 0){
+                  window.location.reload()
+              }else{
+                  swal(res.errmsg)
+              }
+          },
+          beforeSend: function (xhr, settings) {
+                var csrftoken = getCookie('csrftoken');
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+      })
+
+
+
+  })
+
+  // 修改项目发布状态
+  $('.modify_issue_status').click(function(){
+      var but_obj = $(this)
+      var issue_id = but_obj.attr("data")
+      $.ajax({
+          type:"put",
+          data:{"id":issue_id},
+          url:"{% url 'issue_record_change' %}",
+          success: function (res) {
+              if(res.status == 0){
+                  window.location.reload()
+              }else{
+                  swal(res.errmsg)
+              }
+          },
+          beforeSend: function (xhr, settings) {
+                var csrftoken = getCookie('csrftoken');
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+      })
+
+
+  })
+
+  // 导出excel按钮
+  $('#export_exel').click(function(){
+      var search_form = $('#select_form').serialize()
+      //console.log(search_form)
+      $.ajax({
+          type:"post",
+          url:"{% url 'issue_record_list' %}",
+          data:search_form,
+          success:function(res){
+              console.log(res)
+          },
+          beforeSend: function (xhr, settings) {
+                var csrftoken = getCookie('csrftoken');
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            },
+      })
+
+  })
 
 </script>
 {% endblock %}

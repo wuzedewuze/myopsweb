@@ -26,7 +26,7 @@ class IssueRecord(models.Model):
 from issue.models import IssueRecord
 import datetime
 data={"project_name":"front","issue_content":"测试页面","issue_time":datetime.datetime.now(),"dev_person":"金","test_person":"黄龙","issue_person":"发布人员","remark":"备注信息"}
-for i in range(1,100):
+for i in range(1,10000):
     nice = IssueRecord(**data)
     nice.save()
 '''
