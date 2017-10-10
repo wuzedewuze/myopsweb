@@ -76,8 +76,17 @@
                 {% endif %}
             </td>
           <td>{{ object.issue_time|date:"Y-m-d H:i:s" }}</td>
-          <td>{{ object.svn_path }}</td>
-          <td>{{ object.remark}}</td>
+          <td>
+                <button type="button" class="btn btn-sm btn-primary svn-button" data="{{ object.svn_path }}">显示</button>
+          </td>
+          <td>
+              {% if object.remark %}
+                <button type="button" class="btn btn-sm btn-primary remark-button" data="{{ object.remark }}">显示</button>
+              {% else %}
+                 -
+              {% endif %}
+
+          </td>
           <td>
                 <div class="btn-group">
                     {% if object.issue_status == "1" %}
@@ -85,6 +94,7 @@
                     {% else %}
                         <button type="button" class="btn btn-info btn-sm modify_issue_status"  data="{{ object.id }}">发布</button>
                     {% endif %}
+                    <button type="button" class="btn btn-sm btn-warning change_issue" data="{{ object.id }}">修改</button>
                     <button type="button" class="btn btn-sm btn-danger delete_issue"  data="{{ object.id }}">删除</button>
                 </div>
           </td>
@@ -131,48 +141,48 @@
                 <h4 id="user_to_group_modal_title"> 新增发布</h4>
             </div>
             <div class="modal-body clearfix">
-                <form class="form-horizontal" role="form" parsley-validate id="add_issue_form" method="post">
+                <form class="form-horizontal modal-form-id" role="form" parsley-validate id="add_issue_form" method="post">
                 {% csrf_token %}
                     <div class="form-group">
                         <label for="project_name" class="col-sm-2 control-label">工程名*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="project_name" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="project_name" >
+                            <input type="text" class="form-control modal-form" name="project_name" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" >
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="issue_content" class="col-sm-2 control-label">发布内容*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="issue_content" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="issue_content" >
+                            <input type="text" class="form-control modal-form" name="issue_content" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" >
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="dev_person" class="col-sm-2 control-label">开发人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="dev_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="dev_person" >
+                            <input type="text" class="form-control modal-form" name="dev_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" value="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="test_person" class="col-sm-2 control-label">测试人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="test_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="test_person" >
+                            <input type="text" class="form-control modal-form" name="test_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" value="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="issue_person" class="col-sm-2 control-label">发布人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="issue_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="issue_person" >
+                            <input type="text" class="form-control modal-form" name="issue_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" value="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="svn_path" class="col-sm-2 control-label">svn路径*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="svn_path" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="svn_path" >
+                            <input type="text" class="form-control modal-form" name="svn_path" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" value="" >
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="remark" class="col-sm-2 control-label">备注</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="remark" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="remark" >
+                            <input type="text" class="form-control modal-form" name="remark" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" value="" >
                         </div>
                     </div>
                    <div class="form-group form-footer">
@@ -191,6 +201,75 @@
     </div>
 </div>
 
+<!--修改弹出框-->
+<div class="modal fade" id="change-issue-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">x</button>
+                <h4> 修改发布</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <form class="form-horizontal modal-form-id" role="form" parsley-validate id="change_issue_form" method="post" >
+                {% csrf_token %}
+                        <input type="text" class="form-control modal-form hidden" name="id" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="project_id" >
+                    <div class="form-group">
+                        <label for="project_name" class="col-sm-2 control-label">工程名*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control modal-form" name="project_name" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="project_name" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="issue_content" class="col-sm-2 control-label">发布内容*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control modal-form" name="issue_content" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="issue_content" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dev_person" class="col-sm-2 control-label">开发人员*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control modal-form" name="dev_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="dev_person" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="test_person" class="col-sm-2 control-label">测试人员*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control modal-form" name="test_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="test_person" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="issue_person" class="col-sm-2 control-label">发布人员*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control modal-form" name="issue_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="issue_person" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="svn_path" class="col-sm-2 control-label">svn路径*</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control modal-form" name="svn_path" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="svn_path" value="" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="remark" class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control modal-form" name="remark"   autocomplete="off" id="remark" value="" >
+                        </div>
+                    </div>
+                   <div class="form-group form-footer">
+                     <div class="col-sm-offset-4 col-sm-8">
+                     <button type="submit" class="btn btn-primary">提交</button>
+                     <button type="reset" class="btn btn-default">重置</button>
+                     </div>
+                   </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input class="btn btn-default" data-dismiss="modal" aria-hidden="true" type="button" value="取消">
+            </div>
+
+        </div>
+    </div>
+</div>
 
 
 
@@ -212,6 +291,9 @@
 
   // 新增发布模态框展示
   $("#create-issue").click(function(){
+      $(".modal-form").val("")   //输入框的值设为空
+      $("#user_to_group_modal_title").text("新增发布") //修改标题
+      $(".modal-form-id").attr("id","add_issue_form")  // 修改id属性值
       var createmodal=$("#create-issue-modal");
       createmodal.modal("show");
   })
@@ -228,25 +310,94 @@
         success: function (res) {
             if(res.status == 0){
                 window.location.reload()
+            }else {
+
+                swal(res.errmsg)
             }
         }
     })
-
     return false;
 })
+
+  // 修改发布模态框展示
+  $(".change_issue").click(function(){
+      var get_obj = $(this)
+      var this_tr = get_obj.parents("tr")
+      //console.log(this_tr.find("td:eq(1)").text())
+      // 获取当前值
+      var issue_id = get_obj.attr("data")
+      var project_name = this_tr.find("td:eq(1)").text()
+      var issue_content = this_tr.find("td:eq(2)").text()
+      var dev_person = this_tr.find("td:eq(3)").text()
+      var test_person = this_tr.find("td:eq(4)").text()
+      var issue_person = this_tr.find("td:eq(5)").text()
+      var svn_path = this_tr.find("td:eq(8)").children().attr("data")
+      var remark = this_tr.find("td:eq(9)").children().attr("data")
+      //console.log(remark.children().attr("data"))
+      //写入到模态框：
+      $("#project_id").val(issue_id)
+      $("#project_name").val(project_name)
+      $("#issue_content").val(issue_content)
+      $("#dev_person").val(dev_person)
+      $("#test_person").val(test_person)
+      $("#issue_person").val(issue_person)
+      $("#svn_path").val(svn_path)
+      $("#remark").val(remark)
+
+      //$(".modal-form-id").attr("id","change_issue_form")  // 修改id属性值
+      //$("#user_to_group_modal_title").text("修改发布项")
+      var createmodal=$("#change-issue-modal");
+      createmodal.modal("show");
+
+  // 修改发布提交
+  $('#change_issue_form').on('submit',function(){
+    var str = $('#change_issue_form').serialize();
+      console.log(str)
+    $.ajax({
+        url:"{% url 'issue_change' %}",
+        type:"post",
+        data:str,
+        success: function (res) {
+            if(res.status == 0){
+                window.location.reload()
+            }else {
+                swal(res.errmsg)
+            }
+        }
+    })
+    return false;
+})
+
+
+
+  })
+
+
 
   // 删除发布项目
   $('.delete_issue').click(function () {
       var but_obj = $(this);
       var issue_id = but_obj.attr("data")
+      var issur_tr = $(this).parents("tr")
 
-      $.ajax({
+swal({
+  title: "Are you sure?",
+  text: "Your will not be able to recover this imaginary file!",
+  type: "warning",
+  showCancelButton: true,
+  confirmButtonClass: "btn-danger",
+  confirmButtonText: "Yes, delete it!",
+  closeOnConfirm: false
+},
+function(){
+        $.ajax({
           type:"delete",
           data:{"id":issue_id},
           url:"{% url 'issue_record_delete' %}",
           success: function (res) {
               if(res.status == 0){
-                  window.location.reload()
+                  swal("Deleted!", "Your imaginary file has been deleted.", "success");
+                  issur_tr.remove()
               }else{
                   swal(res.errmsg)
               }
@@ -259,8 +410,7 @@
             }
       })
 
-
-
+});
   })
 
   // 修改项目发布状态
@@ -300,6 +450,18 @@
       $('#select_form').attr("action","/issue/issue_record/download/");
       $('#select_form').submit();
   });
+
+  // 显示备注信息按钮
+  $(".remark-button").click(function(){
+     var show_mark = $(this).attr("data")
+      swal(show_mark)
+  })
+ // 显示svn信息按钮
+      $(".svn-button").click(function(){
+     var show_svn = $(this).attr("data")
+      swal(show_svn)
+  })
+
 
 </script>
 {% endblock %}
