@@ -96,6 +96,7 @@
                     {% endif %}
                     <button type="button" class="btn btn-sm btn-warning change_issue" data="{{ object.id }}">修改</button>
                     <button type="button" class="btn btn-sm btn-danger delete_issue"  data="{{ object.id }}">删除</button>
+                    <button type="button" class="btn btn-sm btn-default clone_issue"  data="{{ object.id }}">克隆</button>
                 </div>
           </td>
       </tr>
@@ -146,43 +147,43 @@
                     <div class="form-group">
                         <label for="project_name" class="col-sm-2 control-label">工程名*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="project_name" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" >
+                            <input type="text" class="form-control modal-form" name="project_name" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_project_name" value="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="issue_content" class="col-sm-2 control-label">发布内容*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="issue_content" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" >
+                            <input type="text" class="form-control modal-form" name="issue_content" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_issue_content" value="" >
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="dev_person" class="col-sm-2 control-label">开发人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="dev_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" value="">
+                            <input type="text" class="form-control modal-form" name="dev_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_dev_person" value="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="test_person" class="col-sm-2 control-label">测试人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="test_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" value="">
+                            <input type="text" class="form-control modal-form" name="test_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_test_person" value="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="issue_person" class="col-sm-2 control-label">发布人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="issue_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" value="">
+                            <input type="text" class="form-control modal-form" name="issue_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_issue_person" value="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="svn_path" class="col-sm-2 control-label">svn路径*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="svn_path" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" value="" >
+                            <input type="text" class="form-control modal-form" name="svn_path" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_svn_path" value="" >
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="remark" class="col-sm-2 control-label">备注</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="remark" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="" value="" >
+                            <input type="text" class="form-control modal-form" name="remark"   autocomplete="off" id="add_remark" value="" >
                         </div>
                     </div>
                    <div class="form-group form-footer">
@@ -318,6 +319,35 @@
     })
     return false;
 })
+  //克隆新增模态框展示：
+  $(".clone_issue").click(function() {
+      var get_obj = $(this)
+      var this_tr = get_obj.parents("tr")
+      //console.log(this_tr.find("td:eq(1)").text())
+      // 获取当前值
+      var project_name = this_tr.find("td:eq(1)").text()
+      var issue_content = this_tr.find("td:eq(2)").text()
+      var dev_person = this_tr.find("td:eq(3)").text()
+      var test_person = this_tr.find("td:eq(4)").text()
+      var issue_person = this_tr.find("td:eq(5)").text()
+      var svn_path = this_tr.find("td:eq(8)").children().attr("data")
+      var remark = this_tr.find("td:eq(9)").children().attr("data")
+      //console.log(remark.children().attr("data"))
+      //写入到模态框：
+      $("#add_project_name").val(project_name)
+      $("#add_issue_content").val(issue_content)
+      $("#add_dev_person").val(dev_person)
+      $("#add_test_person").val(test_person)
+      $("#add_issue_person").val(issue_person)
+      $("#add_svn_path").val(svn_path)
+      $("#add_remark").val(remark)
+
+      //$(".modal-form-id").attr("id","change_issue_form")  // 修改id属性值
+      //$("#user_to_group_modal_title").text("修改发布项")
+      var createmodal = $("#create-issue-modal");
+      createmodal.modal("show");
+  })
+
 
   // 修改发布模态框展示
   $(".change_issue").click(function(){
