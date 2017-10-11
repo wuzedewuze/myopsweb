@@ -31,6 +31,7 @@
             <th>电话</th>
             <th>微信号</th>
             <th>状态</th>
+            <th>创建时间</th>
             <th>最后登陆时间</th>
             <th>操作</th>
         </tr>
@@ -50,6 +51,7 @@
                     <span class="glyphicon glyphicon-warning-sign text-warning"></span>禁止
                 {% endif %}
             </td>
+            <td>{{ user_obj.date_joined|date:"Y-m-d H:i:s"}}</td>
             <td>{{ user_obj.last_login|date:"Y-m-d H:i:s" }}</td>
             <td>
                 <div class="btn-group">
@@ -100,7 +102,7 @@
 	</center>
 </div>
 
-
+<!-- 添加用户到组的模态框 -->
 <div class="modal fade" id="user_to_group_modal" aria-hidden="true">
 	<div class="modal-dialog">
 	    <div class="modal-content">
@@ -125,58 +127,56 @@
     </div>
 </div>
 
-
+<!-- 新增用户模态框 -->
 <div class="modal fade" id="create-user-modal" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
 
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">×</button>
-
             </div>
             <div class="modal-body clearfix">
-    <form class="form-horizontal" role="form" parsley-validate id="basicvalidations" method="post">
+    <form class="form-horizontal" role="form" parsley-validate id="create_user_form" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">用户名*</label>
+            <label for="username" class="col-sm-2 control-label">用户名*</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" name="username" parsley-required="true" parsley-minlength="2"  autocomplete="off" >
+                <input type="text" class="form-control" id="username" name="username" parsley-required="true" parsley-minlength="2"  autocomplete="off" >
             </div>
         </div>
-
 
         <div class="form-group">
             <label for="name" class="col-sm-2 control-label">中文名*</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" name="name" parsley-required="true" autocomplete="off" >
+                <input type="text" class="form-control" id="name" name="name" parsley-required="true" autocomplete="off" >
             </div>
         </div>
 
         <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">email *</label>
+            <label for="email" class="col-sm-2 control-label">email *</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" name="address" parsley-required="true" autocomplete="off" >
+                <input type="text" class="form-control" id="email" name="email" parsley-required="true" autocomplete="off" >
             </div>
         </div>
 
         <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">电话 *</label>
+            <label for="phone" class="col-sm-2 control-label">电话 *</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" name="username" parsley-required="true" autocomplete="off" >
+                <input type="text" class="form-control"  id="phone" name="phone" parsley-required="true" autocomplete="off" >
             </div>
         </div>
 
         <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">微信号 *</label>
+            <label for="weixin" class="col-sm-2 control-label">微信号 *</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" name="phone" parsley-required="true" autocomplete="off" >
+                <input type="text" class="form-control" id="weixin" name="weixin" parsley-required="true" autocomplete="off" >
             </div>
         </div>
 
         <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">密码 *</label>
+            <label for="password" class="col-sm-2 control-label">密码 *</label>
             <div class="col-sm-8">
-                <input type="password" class="form-control" name="email" parsley-required="true" autocomplete="off" >
+                <input type="password" class="form-control" id="password" name="password" parsley-required="true" autocomplete="off" >
             </div>
         </div>
 
@@ -195,6 +195,11 @@
         </div>
     </div>
 </div>
+
+
+
+
+
 
 {% endblock %}
 
@@ -295,12 +300,38 @@ $(function(){
 
     });
 })
-  // 创建用户
+  // 创建用户模态框显示
   $("#create-user-id").click(function(){
       var createmodal=$("#create-user-modal");
       createmodal.modal("show");
-
 })
+
+ // 添加用户提交
+  $("#create_user_form").on("submit", function () {
+      var str = $('#create_user_form').serialize();
+      console.log(str)
+      $.ajax({
+        url:"{% url 'user_add' %}",
+        type:"post",
+        data:str,
+        success: function (res) {
+            if(res.status == 0){
+                swal({
+                    "title": "用户添加成功",
+                    "text": "",
+                    "type": "success"
+                }, function(){
+                    setTimeout(function(){
+                        window.location.reload();
+                    },100)
+                });
+            }else {
+                swal(res.errmsg)
+            }
+        }
+      })
+      return false;  // 没有这个会原来的from也会再提交一次
+  })
 
 </script>
 {% endblock %}

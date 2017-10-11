@@ -4,9 +4,8 @@ from accounts import views, user, group, permission
 urlpatterns = [
     url(r'^login/$', views.UserLoginView.as_view(), name='user_login'),
     url(r'^logout/$', views.UserLogoutView.as_view(), name="user_logout"),
-    #url(r'^user/list/$', views.UserListView.as_view(), name="user_list"),
     url(r'^user/list/$', user.UserListView.as_view(), name="user_list"),
-
+    url(r'^user/add/$', user.AddUserView.as_view(), name="user_add"),
     url(r'^user/', include([
         url(r'^modify/', include([
             url(r'^status/$', user.ModifyUserStatusView.as_view(), name="user_modify_status"),

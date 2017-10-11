@@ -1,14 +1,16 @@
 {% extends "public/layout.html" %}
 
-
 {%  block body %}
 <table class="table table-striped">
     <caption>
+        {% if perms.issue.add_issuerecord %}
         <div class="col-md-1">
             <button class="btn btn-primary" id="create-issue">新增发布</button>
         </div>
+        {% endif %}
+
         <div class="col-md-10">
-            <form class="form-inline" id="select_form" action="/issue/issue_record/list/" method="get">
+            <form class="form-inline" id="select_form" action="{% url 'issue_record_list' %}" method="get">
                 <!--工程名查询-->
               <div class="form-group">
                 <label for="exampleInputName2">工程名</label>
@@ -37,10 +39,11 @@
             <button class="btn btn-primary" id="searchBtn">查询</button>
           </form>
         </div>
+        {% if perms.issue.export_issue %}
         <div class="col-md-1">
             <button class="btn btn-primary" id="export_exel" >导出excel</button>
         </div>
-
+        {% endif %}
     </caption>
     <thead>
         <tr>
@@ -89,14 +92,22 @@
           </td>
           <td>
                 <div class="btn-group">
+                    {% if perms.issue.change_issuerecord %}
                     {% if object.issue_status == "1" %}
                         <button type="button" class="btn btn-sm btn-warning modify_issue_status" data="{{ object.id }}">回滚</button>
                     {% else %}
                         <button type="button" class="btn btn-info btn-sm modify_issue_status"  data="{{ object.id }}">发布</button>
                     {% endif %}
-                    <button type="button" class="btn btn-sm btn-warning change_issue" data="{{ object.id }}">修改</button>
+
+                    <button type="button" class="btn btn-sm btn-default change_issue" data="{{ object.id }}">修改</button>
+                    {% endif %}
+
+                    {% if perms.issue.delete_issuerecord %}
                     <button type="button" class="btn btn-sm btn-danger delete_issue"  data="{{ object.id }}">删除</button>
-                    <button type="button" class="btn btn-sm btn-default clone_issue"  data="{{ object.id }}">克隆</button>
+                    {% endif %}
+                    {% if perms.issue.add_issuerecord %}
+                    <button type="button" class="btn btn-sm btn-primary clone_issue"  data="{{ object.id }}">克隆</button>
+                    {% endif %}
                 </div>
           </td>
       </tr>
@@ -302,8 +313,7 @@
   // 新增发布提交
   $('#add_issue_form').on('submit',function(){
     var str = $('#add_issue_form').serialize();
-    console.log(str)
-
+    //console.log(str)
     $.ajax({
         url:"{% url 'issue_record_add' %}",
         type:"post",
@@ -312,13 +322,15 @@
             if(res.status == 0){
                 window.location.reload()
             }else {
-
                 swal(res.errmsg)
             }
         }
     })
     return false;
 })
+
+
+
   //克隆新增模态框展示：
   $(".clone_issue").click(function() {
       var get_obj = $(this)
@@ -487,7 +499,7 @@ function(){
       swal(show_mark)
   })
  // 显示svn信息按钮
-      $(".svn-button").click(function(){
+  $(".svn-button").click(function(){
      var show_svn = $(this).attr("data")
       swal(show_svn)
   })

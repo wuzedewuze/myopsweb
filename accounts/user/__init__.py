@@ -1,13 +1,11 @@
-from django.views.generic import ListView, View
-from django.contrib.auth.models import User, Group
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User, Group
 from django.http import JsonResponse, QueryDict
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import reverse
-from django.conf import settings
-from accounts.mixins import PermissionRequiredMixin
+from django.views.generic import ListView, View
 
+from accounts.mixins import PermissionRequiredMixin
+from accounts.user.forms import AddUserForm
+from accounts.models import  Profile
 
 class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = "auth.view_user"
@@ -145,3 +143,27 @@ class ModifyUserGroupView(LoginRequiredMixin, PermissionRequiredMixin, View):
             ret['status'] = 1
             ret['errmsg'] = "用户组不存在"
         return JsonResponse(ret)
+
+from accounts.common import get_errors_message
+# 新增用户类
+class AddUserView(View):
+    def post(self, request):
+        res = {"status": 0}
+        user_data = AddUserForm(request.POST)
+        if user_data.is_valid():
+            try:
+                user={"username":user_data.cleaned_data["username"],"email":user_data.cleaned_data["email"],}
+                user_obj=User(**user)
+                user_obj.set_password(user_data.cleaned_data["password"])
+                user_obj.save()
+                profile = {"user":user_obj,"name":user_data.cleaned_data["name"],"phone":user_data.cleaned_data["phone"],"weixin":user_data.cleaned_data["weixin"]}
+                Profile(**profile).save()
+            except Exception as e:
+                print(e)
+                res["status"] = 1
+                res["errmsg"] = "保存发布发生异常，请查看后台日志"
+        else:
+            err = user_data.errors.as_data()
+            res["status"] = 1
+            res["errmsg"] = get_errors_message(err)
+        return JsonResponse(res)

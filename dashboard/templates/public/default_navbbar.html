@@ -3,12 +3,12 @@
     <div class="sidebar-nav navbar-collapse">
         <ul class="nav" id="side-menu">  <!--菜单列表-->
             <li><a href="/"><i class="fa fa-home fa-fw"></i>控制面板</a></li>
+            {% if perms.auth.view_user %}
             <li> <!--用户管理-->
                 <a href="#"><i class="fa fa-user fa-fw" ></i>用户管理<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level  collapse">
-                    {% if perms.auth.view_user %}
                     <li><a href="{% url 'user_list' %}" class="menu-link">用户列表</a></li>
-                    {% endif %}
+
                     {% if perms.auth.view_group %}
                     <li><a href="{% url 'group_list' %}" class="menu-link">用户组管理</a></li>
                     {% endif %}
@@ -17,16 +17,18 @@
                     {% endif %}
                 </ul>
             </li> <!--用户管理 end-->
+            {% endif %}
+
             <li><!--资产平台-->
                 <a href="#" ><i class="fa fa-database fa-fw"></i>资源管理<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse" >
-                    <li>
-                        <a href="#" class="menu-link">服务器管理</a>
-                    </li>
+                    <!--<li>-->
+                        <!--<a href="#" class="menu-link">服务器管理</a>-->
+                    <!--</li>-->
 
-                    <li>
-                        <a href="#" class="menu-link">业务线管理</a>
-                    </li>
+                    <!--<li>-->
+                        <!--<a href="#" class="menu-link">业务线管理</a>-->
+                    <!--</li>-->
 
                     {% if perms.resources.view_idc %}
                         <li>
@@ -36,27 +38,29 @@
                 </ul>
             </li> <!--CMDB资产平台结束-->
 
-            <li><!--代码管理-->
-                <a href="#" ><i class="fa fa-file-code-o fa-fw"></i>监控配置<span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level collapse" >
-                    <li>
-                        <a href="#">同步主机到zabbix</a>
-                    </li>
-                    <li>
-                        <a href="#">模板绑定</a>
-                    </li>
-                </ul>
-            </li> <!--代码管理结束-->
+            <!--<li>&lt;!&ndash;代码管理&ndash;&gt;-->
+                <!--<a href="#" ><i class="fa fa-file-code-o fa-fw"></i>监控配置<span class="fa arrow"></span></a>-->
+                <!--<ul class="nav nav-second-level collapse" >-->
+                    <!--<li>-->
+                        <!--<a href="#">同步主机到zabbix</a>-->
+                    <!--</li>-->
+                    <!--<li>-->
+                        <!--<a href="#">模板绑定</a>-->
+                    <!--</li>-->
+                <!--</ul>-->
+            <!--</li> &lt;!&ndash;代码管理结束&ndash;&gt;-->
 
             <li><!--发布管理-->
                 <a href="#" ><i class="fa fa-send-o fa-fw"></i>发布管理<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse" >
+                    {% if perms.issue.view_issue %}
                     <li>
                         <a href="{% url 'issue_record_list' %}">发布操作</a>
                     </li>
-                    <li>
-                        <a href="#">发布配置</a>
-                    </li>
+                    {% endif %}
+                    <!--<li>-->
+                        <!--<a href="#">发布配置</a>-->
+                    <!--</li>-->
                 </ul>
             </li> <!--代码管理结束-->
 

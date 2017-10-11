@@ -4,6 +4,8 @@ from django.views.generic import ListView, View
 from issue.models import IssueRecord
 from django.http import JsonResponse,QueryDict,HttpResponse
 from django.views.generic.list import  MultipleObjectMixin
+from accounts.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 import datetime
 from issue import forms
@@ -14,7 +16,10 @@ import  os,json
 from io import StringIO,BytesIO
 
 
-class ListIssueRecordView(ListView):
+class ListIssueRecordView(LoginRequiredMixin,PermissionRequiredMixin,ListView):
+    permission_required = "issue.view_issue"
+    permission_redirect_field_name = "index"
+
     model = IssueRecord
     template_name = "list_issue_record.html"
     ordering = "-id"
@@ -73,7 +78,10 @@ class ListIssueRecordView(ListView):
 
 
 # excel下载类
-class DownLoadExcelView(MultipleObjectMixin,View):
+class DownLoadExcelView(LoginRequiredMixin,PermissionRequiredMixin,MultipleObjectMixin,View):
+    permission_required = "issue.export_issue"
+    permission_redirect_field_name = "index"
+
     model = IssueRecord
 
     def get(self,request,*args, **kwargs):
@@ -107,7 +115,6 @@ class DownLoadExcelView(MultipleObjectMixin,View):
 
     # 生成excel的内部方法保存excel到本地并返回Workbook对象：
     def get_excel(self,object_list,excel_name):
-
         # 设置头部样式
         style_heading = easyxf("""
         font:
@@ -178,7 +185,11 @@ class DownLoadExcelView(MultipleObjectMixin,View):
 
 
 # 新增发布操作
-class AddIssueView(View):
+class AddIssueView(LoginRequiredMixin,PermissionRequiredMixin,View):
+    permission_required = "issue.add_issuerecord"
+    permission_redirect_field_name = "index"
+
+
     def post(self, request):
         res = {"status": 0}
         issue_date = forms.CreateIssueForm(request.POST)
@@ -203,7 +214,11 @@ class AddIssueView(View):
 
 
 # 修改发布操作
-class ChangeIssueView(View):
+class ChangeIssueView(LoginRequiredMixin,PermissionRequiredMixin,View):
+    permission_required = "issue.change_issuerecord"
+    permission_redirect_field_name = "index"
+
+
     def post(self, request):
         res = {"status": 0}
         issue_date = forms.ChangeIssueForm(request.POST)
@@ -225,7 +240,11 @@ class ChangeIssueView(View):
 
 
 # 删除操作
-class DeleteIssueView(View):
+class DeleteIssueView(LoginRequiredMixin,PermissionRequiredMixin,View):
+    permission_required = "issue.delete_issuerecord"
+    permission_redirect_field_name = "index"
+
+
     def delete(self, request):
         res={"status":0}
         issue_dict = QueryDict(request.body)
@@ -247,7 +266,10 @@ class DeleteIssueView(View):
 
 
 # 修改发布状态
-class ChangeIssueStatusView(View):
+class ChangeIssueStatusView(LoginRequiredMixin,PermissionRequiredMixin,View):
+    permission_required = "issue.change_issuerecord"
+    permission_redirect_field_name = "index"
+
     def put(self,request):
         res = {"status":0}
         issue_dict = QueryDict(request.body)
