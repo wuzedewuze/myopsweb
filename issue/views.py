@@ -117,60 +117,107 @@ class DownLoadExcelView(LoginRequiredMixin,PermissionRequiredMixin,MultipleObjec
     def get_excel(self,object_list,excel_name):
         # 设置头部样式
         style_heading = easyxf("""
+            font:
+                name Arial,
+                colour_index white,
+                bold on,
+                height 0xA0;
+            align:
+                wrap off,
+                vert center,
+                horiz center;
+            pattern:
+                pattern solid,
+                fore-colour 0x19;
+            borders:
+                left THIN,
+                right THIN,
+                top THIN,
+                bottom THIN;
+            """
+                                )
+        style_body = easyxf("""
         font:
             name Arial,
-            colour_index white,
-            bold on,
-            height 0xA0;
+            bold off,
+            height 0XA0;
         align:
-            wrap off,
+            wrap on,
             vert center,
-            horiz center;
-        pattern:
-            pattern solid,
-            fore-colour 0x19;
+            horiz left;
         borders:
             left THIN,
             right THIN,
             top THIN,
             bottom THIN;
         """
-                                )
+        )
+
+
+        style_green = easyxf(" pattern: pattern solid,fore-colour 0x11;")
+        style_red = easyxf(" pattern: pattern solid,fore-colour 0x0A;")
+        fmts = [
+            'M/D/YY',
+            'D-MMM-YY',
+            'D-MMM',
+            'MMM-YY',
+            'h:mm AM/PM',
+            'h:mm:ss AM/PM',
+            'h:mm',
+            'h:mm:ss',
+            'M/D/YY h:mm',
+            'mm:ss',
+            '[h]:mm:ss',
+            'mm:ss.0',
+        ]
 
         # 创建工作薄
         ws = Workbook(encoding='utf-8')
         w = ws.add_sheet(u"发布记录")
         # 写入标题
-        w.write(0, 0, "id")
-        w.write(0, 1, u"工程名")
-        w.write(0, 2, u"发布内容")
-        w.write(0, 3, u"发布时间")
-        w.write(0, 4, u"开发人员")
-        w.write(0, 5, u'测试人员')
-        w.write(0, 6, u'发布人员')
-        w.write(0, 7, u'发布状态')
-        w.write(0, 8, u'svn路径')
-        w.write(0, 9, u'备注信息')
+        w.write(0, 0, u"发布时间",style_heading)
+        w.write(0, 1, u"工程名",style_heading)
+        w.write(0, 2, u"发布内容",style_heading)
+        w.write(0, 3, u"开发人员",style_heading)
+        w.write(0, 4, u'测试人员',style_heading)
+        w.write(0, 5, u'发布人员',style_heading)
+        w.write(0, 6, u'发布状态',style_heading)
+        w.write(0, 7, u'svn路径',style_heading)
+        w.write(0, 8, u'备注信息',style_heading)
+
+        # 宽度调整
+        w.col(0).width = 80*50
+        w.col(1).width = 80*50
+        w.col(2).width = 300*50
+        w.col(3).width = 100*50
+        w.col(4).width = 100*50
+        w.col(5).width = 50*50
+        w.col(6).width = 30*50
+        w.col(7).width = 500*50
+        w.col(7).width = 300*50
+
         # 写入内容
         row = 1
         for object in object_list:
-            w.write(row,0,row)
-            w.write(row,1,object.project_name)
-            w.write(row,2,object.issue_content)
-            w.write(row,3,object.issue_time.strftime('%Y-%m-%d %H:%M:%S'))
-            w.write(row,4,object.dev_person)
-            w.write(row,5,object.test_person)
-            w.write(row,6,object.issue_person)
+            w.write(row,0,object.issue_time.strftime('%Y-%m-%d %H:%M:%S'),style_body)
+            w.write(row,1,object.project_name,style_body)
+            w.write(row,2,object.issue_content,style_body)
+            w.write(row,3,object.dev_person,style_body)
+            w.write(row,4,object.test_person,style_body)
+            w.write(row,5,object.issue_person,style_body)
             status = "未知状态"
             if object.issue_status == "0":
                 status = "未发布"
+                w.write(row,6,status,style_red)
             elif object.issue_status == "1":
                 status = "已发布"
+                w.write(row,6,status,style_green)
             elif object.issue_status == "2":
                 status = "已回滚"
-            w.write(row,7,status)
-            w.write(row,8,object.svn_path)
-            w.write(row,9,object.remark)
+                w.write(row,6,status,style_body)
+
+            w.write(row,7,object.svn_path,style_body)
+            w.write(row,8,object.remark,style_body)
             row+=1
         # 保存到本地
         ###########################
