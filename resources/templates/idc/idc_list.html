@@ -27,10 +27,52 @@
                 <td>{{ idc_obj.email }}</td>
                 <td>{{ idc_obj.username }}</td>
                 <td>
-                    <button type="button" class="btn btn-danger btn-sm">删除</button>
+                    <button  type="button" class="btn btn-danger btn-sm delete_idc" data-idcid="{{ idc_obj.id }}">删除</button>
                 </td>
             </tr>
         {% endfor %}
     </table>
 {% endblock %}
 
+{% block js %}
+<script>
+  $(".delete_idc").click(function () {
+        //console.log($(this).attr("data-idcid"))
+
+   var idc_id = $(this).attr("data-idcid")
+   var idc_tr = $(this).parents("tr")
+swal({
+  title: "Are you sure?",
+  text: "Your will not be able to recover this imaginary file!",
+  type: "warning",
+  showCancelButton: true,
+  confirmButtonClass: "btn-danger",
+  confirmButtonText: "Yes, delete it!",
+  closeOnConfirm: false
+},
+function(){
+        $.ajax({
+          type:"delete",
+          data:{"id":idc_id},
+          url:"{% url 'idc_delete' %}",
+          success: function (res) {
+              if(res.status == 0){
+                  swal("Deleted!", "Your imaginary file has been deleted.", "success");
+                  idc_tr.remove() //删除当前列
+              }else{
+                  swal(res.errmsg)
+              }
+          },
+          beforeSend: function (xhr, settings) {
+                var csrftoken = getCookie('csrftoken');
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+      })
+
+});
+  })
+
+</script>
+{% endblock %}

@@ -4,8 +4,9 @@ from django.http import JsonResponse, QueryDict
 from django.views.generic import ListView, View
 
 from accounts.mixins import PermissionRequiredMixin
-from accounts.user.forms import AddUserForm
 from accounts.models import  Profile
+from accounts.user.forms import AddUserForm
+
 
 class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = "auth.view_user"
@@ -144,7 +145,7 @@ class ModifyUserGroupView(LoginRequiredMixin, PermissionRequiredMixin, View):
             ret['errmsg'] = "用户组不存在"
         return JsonResponse(ret)
 
-from accounts.common import get_errors_message
+from dashboard.common import get_errors_message
 # 新增用户类
 class AddUserView(View):
     def post(self, request):

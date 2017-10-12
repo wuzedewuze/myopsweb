@@ -394,7 +394,7 @@
   // 修改发布提交
   $('#change_issue_form').on('submit',function(){
     var str = $('#change_issue_form').serialize();
-      console.log(str)
+      //console.log(str)
     $.ajax({
         url:"{% url 'issue_change' %}",
         type:"post",

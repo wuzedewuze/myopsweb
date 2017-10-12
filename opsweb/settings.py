@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'accounts',
     'resources',
     'issue',
+    'mytestapp',
 ]
 
 MIDDLEWARE = [
