@@ -18,6 +18,7 @@ class ChangeIssueForm(forms.Form):
     issue_content = forms.CharField(required=True)
     dev_person = forms.CharField(required=True)
     test_person = forms.CharField(required=True)
+    issue_time = forms.CharField(required=True)
     issue_person = forms.CharField(required=True)
     svn_path = forms.URLField(required=True,error_messages={"invalid":"必须输入url格式"})
     remark = forms.CharField(required=False)

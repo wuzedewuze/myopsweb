@@ -16,6 +16,11 @@
                 <label for="exampleInputName2">工程名</label>
                 <input type="text" class="form-control" id="exampleInputName2" placeholder="工程名搜索" name="search_project" value="{{ search_project }}">
               </div>
+                <!--发布内容查询-->
+              <div class="form-group">
+                <label for="search_issue_content">发布内容</label>
+                <input type="text" class="form-control" id="search_issue_content" placeholder="发布内容搜索" name="search_issue_content" value="{{ search_issue_content }}">
+              </div>
                 <!--开始时间-->
 			  <div class="form-group">
                 <label for="dtp_input2" class="control-label">开始时间</label>
@@ -267,6 +272,18 @@
                             <input type="text" class="form-control modal-form" name="remark"   autocomplete="off" id="remark" value="" >
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label for="dtp_input_change" class="col-sm-2 control-label">修改时间</label>
+                        <div class="input-group date form_datetime col-sm-8" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input_change" data-link-format="yyyy-mm-dd">
+                            <input id="issue_time" class="form-control" size="15" type="text"  readonly name="issue_time">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+					        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+				        <input type="hidden" id="dtp_input_change" value="" />
+                    </div>
+
+
                    <div class="form-group form-footer">
                      <div class="col-sm-offset-4 col-sm-8">
                      <button type="submit" class="btn btn-primary">提交</button>
@@ -300,6 +317,12 @@
 		minView: 2,
 		forceParse: 0
   });
+
+    $(".form_datetime").datetimepicker({
+        language:  'zh-CN',
+        autoclose: 1,
+        format: 'yyyy-mm-dd hh:ii'});
+
 
   // 新增发布模态框展示
   $("#create-issue").click(function(){
@@ -373,8 +396,10 @@
       var dev_person = this_tr.find("td:eq(3)").text()
       var test_person = this_tr.find("td:eq(4)").text()
       var issue_person = this_tr.find("td:eq(5)").text()
+      var issue_time = this_tr.find("td:eq(7)").text()
       var svn_path = this_tr.find("td:eq(8)").children().attr("data")
       var remark = this_tr.find("td:eq(9)").children().attr("data")
+
       //console.log(remark.children().attr("data"))
       //写入到模态框：
       $("#project_id").val(issue_id)
@@ -383,6 +408,7 @@
       $("#dev_person").val(dev_person)
       $("#test_person").val(test_person)
       $("#issue_person").val(issue_person)
+      $("#issue_time").val(issue_time)
       $("#svn_path").val(svn_path)
       $("#remark").val(remark)
 

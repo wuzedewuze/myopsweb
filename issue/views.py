@@ -22,7 +22,7 @@ class ListIssueRecordView(LoginRequiredMixin,PermissionRequiredMixin,ListView):
 
     model = IssueRecord
     template_name = "list_issue_record.html"
-    ordering = "-id"
+    ordering = "issue_time"
 
     paginate_by = 10
     before_range_num = 5
@@ -31,12 +31,15 @@ class ListIssueRecordView(LoginRequiredMixin,PermissionRequiredMixin,ListView):
     def get_queryset(self):
         queryset = super(ListIssueRecordView, self).get_queryset()
         search_project = self.request.GET.get("search_project", None)
+        search_issue_content = self.request.GET.get("search_issue_content", None)
         start_date = self.request.GET.get("start_date", None)
         end_date = self.request.GET.get("end_date", None)
         today_date = datetime.datetime.today().strftime('%Y-%m-%d')
         #print(today_date)
         if search_project:
             queryset = queryset.filter(project_name__icontains=search_project)
+        if search_issue_content:
+            queryset = queryset.filter(issue_content__icontains=search_issue_content)
         if start_date:
             queryset = queryset.filter(issue_time__gt=datetime.datetime.strptime(start_date, '%Y-%m-%d'))
         else:
@@ -271,9 +274,9 @@ class ChangeIssueView(LoginRequiredMixin,PermissionRequiredMixin,View):
         issue_date = forms.ChangeIssueForm(request.POST)
         if issue_date.is_valid():
             try:
-                issue_time = datetime.datetime.now()
+                #issue_time = datetime.datetime.now()
                 data = models.IssueRecord(**issue_date.cleaned_data)
-                data.issue_time = issue_time
+                #data.issue_time = issue_time
                 data.save()
             except Exception as e:
                 print(e)
