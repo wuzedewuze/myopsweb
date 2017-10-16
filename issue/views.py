@@ -274,10 +274,8 @@ class ChangeIssueView(LoginRequiredMixin,PermissionRequiredMixin,View):
         issue_date = forms.ChangeIssueForm(request.POST)
         if issue_date.is_valid():
             try:
-                #issue_time = datetime.datetime.now()
-                data = models.IssueRecord(**issue_date.cleaned_data)
-                #data.issue_time = issue_time
-                data.save()
+                id = issue_date.cleaned_data["id"]
+                data, create= models.IssueRecord.objects.update_or_create(id=id,defaults=issue_date.cleaned_data,)
             except Exception as e:
                 print(e)
                 res["status"] = 1
