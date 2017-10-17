@@ -4,10 +4,12 @@ from django.http import JsonResponse, QueryDict
 from django.views.generic import ListView, View
 
 from accounts.mixins import PermissionRequiredMixin
-from accounts.models import  Profile
+from accounts.models import Profile
 from accounts.user.forms import AddUserForm
+from dashboard.common import get_errors_message
 
 
+# 查看用来列表
 class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = "auth.view_user"
     permission_redirect_field_name = "index"
@@ -22,8 +24,8 @@ class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     def get_queryset(self):
         queryset = super(UserListView, self).get_queryset()
         queryset = queryset.filter(is_superuser=False)
-
         username = self.request.GET.get("search_username", None)
+
         if username:
             queryset = queryset.filter(username__icontains=username)
 
@@ -33,18 +35,9 @@ class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         context = super(UserListView, self).get_context_data(**kwargs)
 
         # 当前页  的前7条
-        """
-        current_index = context['page_obj'].number
-        start = current_index - 3
-        end = current_index + 3
-        if start <= 0:
-            start = 1
-        if end > context['paginator'].num_pages:
-            end = context['paginator'].num_pages
-        context['page_range'] = range(start, end)
-        """
         context['page_range'] = self.get_pagerange(context['page_obj'])
         # 处理搜索条件
+        context['search_username']="" # 设置默认为空
         search_data = self.request.GET.copy()
         try:
             search_data.pop("page")
@@ -70,6 +63,7 @@ class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         return super(UserListView, self).get(request, *args, **kwargs)
 
 
+# 修改用户状态
 class ModifyUserStatusView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = "auth.change_user"
     permission_redirect_field_name = "index"
@@ -92,6 +86,7 @@ class ModifyUserStatusView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return JsonResponse(ret)
 
 
+# 修改用户组
 class ModifyUserGroupView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = ("auth.change_user", "auth.delete_user")
     permission_redirect_field_name = "index"
@@ -145,7 +140,7 @@ class ModifyUserGroupView(LoginRequiredMixin, PermissionRequiredMixin, View):
             ret['errmsg'] = "用户组不存在"
         return JsonResponse(ret)
 
-from dashboard.common import get_errors_message
+
 # 新增用户类
 class AddUserView(View):
     def post(self, request):
@@ -153,11 +148,12 @@ class AddUserView(View):
         user_data = AddUserForm(request.POST)
         if user_data.is_valid():
             try:
-                user={"username":user_data.cleaned_data["username"],"email":user_data.cleaned_data["email"],}
-                user_obj=User(**user)
+                user = {"username": user_data.cleaned_data["username"], "email": user_data.cleaned_data["email"],}
+                user_obj = User(**user)
                 user_obj.set_password(user_data.cleaned_data["password"])
                 user_obj.save()
-                profile = {"user":user_obj,"name":user_data.cleaned_data["name"],"phone":user_data.cleaned_data["phone"],"weixin":user_data.cleaned_data["weixin"]}
+                profile = {"user": user_obj, "name": user_data.cleaned_data["name"],
+                           "phone": user_data.cleaned_data["phone"], "weixin": user_data.cleaned_data["weixin"]}
                 Profile(**profile).save()
             except Exception as e:
                 print(e)
