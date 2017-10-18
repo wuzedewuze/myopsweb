@@ -160,7 +160,11 @@ LOGGING = {
 
     'formatters': {#日志格式
         'standard': {
-            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
+            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'
+        },
+        'myformat':{
+            'format':'%(asctime)s %(pathname)s:%(lineno)d[%(levelname)s] - %(message)s'
+        }
     },
 
     'filters': {#过滤器
@@ -188,6 +192,14 @@ LOGGING = {
             'backupCount': 10,#备份份数
             'formatter':'standard',#使用哪种formatters日志格式
         },
+        'selflog':{# 自定义日志文件
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': "/var/django/myself.log",#日志输出文件
+            'maxBytes':1024*1024*5,#文件大小
+            'backupCount': 10,#备份份数
+            'formatter':'myformat',#使用哪种formatters日志格式
+        },
         'console':{#输出到控制台
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -202,6 +214,11 @@ LOGGING = {
         },
         'django.request': {
             'handlers': ['debug'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'myself':{
+            'handlers': ['selflog'],
             'level': 'DEBUG',
             'propagate': True,
         },

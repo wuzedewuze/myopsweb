@@ -7,13 +7,12 @@ from accounts.mixins import PermissionRequiredMixin
 from accounts.models import Profile
 from accounts.user.forms import AddUserForm
 from dashboard.common import get_errors_message
-
-
+import  logging
+logger = logging.getLogger("myself")
 # 查看用来列表
 class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = "auth.view_user"
     permission_redirect_field_name = "index"
-
     template_name = "user/userlist.html"
     model = User
     paginate_by = 8
@@ -25,10 +24,9 @@ class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         queryset = super(UserListView, self).get_queryset()
         queryset = queryset.filter(is_superuser=False)
         username = self.request.GET.get("search_username", None)
-
+        logger.debug(queryset)
         if username:
             queryset = queryset.filter(username__icontains=username)
-
         return queryset
 
     def get_context_data(self, **kwargs):
