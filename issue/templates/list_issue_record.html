@@ -378,7 +378,7 @@
       var issue_content = this_tr.find("td:eq(2)").text()
       var dev_person = this_tr.find("td:eq(3)").text()
       var test_person = this_tr.find("td:eq(4)").text()
-      var issue_person = this_tr.find("td:eq(5)").text()
+      {#var issue_person = this_tr.find("td:eq(5)").text()#}
       var svn_path = this_tr.find("td:eq(7)").children().attr("data")
       var remark = this_tr.find("td:eq(8)").children().attr("data")
       //console.log(remark.children().attr("data"))
@@ -463,12 +463,12 @@
       var issur_tr = $(this).parents("tr")
 
 swal({
-  title: "Are you sure?",
-  text: "Your will not be able to recover this imaginary file!",
+  title: "确定删除吗?",
+  text: "删除后无法找回,请确认!",
   type: "warning",
   showCancelButton: true,
   confirmButtonClass: "btn-danger",
-  confirmButtonText: "Yes, delete it!",
+  confirmButtonText: "Yes",
   closeOnConfirm: false
 },
 function(){
