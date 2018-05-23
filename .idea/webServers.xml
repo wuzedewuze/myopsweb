@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="ef07254f-6f31-496c-bb8a-7284f0e24438" name="192.168.20.183" url="http://192.168.20.183">
+        <fileTransfer host="192.168.20.183" port="22" rootFolder="/home/wuyang/myopsweb" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
