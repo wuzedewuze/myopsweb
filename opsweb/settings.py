@@ -83,11 +83,12 @@ DATABASES = {
         #'ENGINE': 'django.db.backends.sqlite3',
         #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django',
-        'USER': 'root',
+        'NAME': 'cmdb',
+        'USER': 'cmdb',
         'PASSWORD': '123456',
         'HOST': '127.0.0.1',
         'PORT': 3306,
+
     }
 }
 
@@ -157,7 +158,6 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL = EMAIL_HOST_USER #设置发件人
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
-
     'formatters': {#日志格式
         'standard': {
             'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'
@@ -166,13 +166,11 @@ LOGGING = {
             'format':'%(asctime)s %(pathname)s:%(lineno)d[%(levelname)s] - %(message)s'
         }
     },
-
     'filters': {#过滤器
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse',
         }
     },
-
     'handlers': {#处理器
         'null': {
             'level': 'DEBUG',
@@ -209,18 +207,18 @@ LOGGING = {
     'loggers': {#logging管理器
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False
+            'level': 'INFO',
+            'propagate': True
         },
         'django.request': {
             'handlers': ['debug'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
         },
         'myself':{
             'handlers': ['selflog'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
         },
         # 对于不在 ALLOWED_HOSTS 中的请求不发送报错邮件
         'django.security.DisallowedHost': {

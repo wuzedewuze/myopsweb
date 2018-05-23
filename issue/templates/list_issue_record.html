@@ -57,7 +57,7 @@
             <th>发布内容</th>
             <th>开发人员</th>
             <th>测试人员</th>
-            <th>发布人员</th>
+            <!--<th>发布人员</th>-->
             <th>发布状态</th>
             <th>发布时间</th>
             <th>svn路径</th>
@@ -73,7 +73,7 @@
           <td>{{ object.issue_content }}</td>
           <td>{{ object.dev_person }}</td>
           <td>{{ object.test_person }}</td>
-          <td>{{ object.issue_person }}</td>
+          <!--<td>{{ object.issue_person }}</td>-->
             <td class="status">
                 {% if object.issue_status == "1" %}
                     <span class="glyphicon glyphicon-ok-circle text-success"></span>已发布
@@ -163,37 +163,42 @@
                     <div class="form-group">
                         <label for="project_name" class="col-sm-2 control-label">工程名*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="project_name" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_project_name" value="">
+                            <input type="text" class="form-control modal-form" name="project_name" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_project_name" value="" placeholder="工程名">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="issue_content" class="col-sm-2 control-label">发布内容*</label>
+                        <label for="issue_content" class="col-sm-2 control-label">发布项目*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="issue_content" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_issue_content" value="" >
+                            <input type="text" class="form-control modal-form" name="issue_content" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_issue_content" value="" placeholder="与禅道系统保持一致" >
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="dev_person" class="col-sm-2 control-label">开发人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="dev_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_dev_person" value="">
+                            <input type="text" class="form-control modal-form" name="dev_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_dev_person" value="" placeholder="开发人员名">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="test_person" class="col-sm-2 control-label">测试人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="test_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_test_person" value="">
+                            <input type="text" class="form-control modal-form" name="test_person"   autocomplete="off" id="add_test_person" value={{ user.username }} >
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="issue_person" class="col-sm-2 control-label">发布人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="issue_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_issue_person" value="">
+                            <!--<input type="text" class="form-control modal-form" name="issue_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_issue_person" value="">-->
+                            <select class="form-control" id="add_issue_person" name="issue_person">
+                                {% for user in issue_names %}
+                                    <option>{{ user.profile.name }} </option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="svn_path" class="col-sm-2 control-label">svn路径*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="svn_path" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_svn_path" value="" >
+                            <input type="text" class="form-control modal-form" name="svn_path" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="add_svn_path" value="" placeholder="http://svn_path">
                         </div>
                     </div>
                     <div class="form-group">
@@ -233,37 +238,45 @@
                     <div class="form-group">
                         <label for="project_name" class="col-sm-2 control-label">工程名*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="project_name" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="project_name" >
+                            <input type="text" class="form-control modal-form" name="project_name" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="project_name" placeholder="工程名">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="issue_content" class="col-sm-2 control-label">发布内容*</label>
+                        <label for="issue_content" class="col-sm-2 control-label">发布项目*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="issue_content" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="issue_content" >
+                            <input type="text" class="form-control modal-form" name="issue_content" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="issue_content" placeholder="与禅道系统保持一致">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="dev_person" class="col-sm-2 control-label">开发人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="dev_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="dev_person" value="">
+                            <input type="text" class="form-control modal-form" name="dev_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="dev_person" value="" placeholder="开发人员名">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="test_person" class="col-sm-2 control-label">测试人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="test_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="test_person" value="">
+                            <input type="text" class="form-control modal-form" name="test_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="test_person" value="" placeholder="默认为登录人员">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="issue_person" class="col-sm-2 control-label">发布人员*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="issue_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="issue_person" value="">
+                            <!--<input type="text" class="form-control modal-form" name="issue_person" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="issue_person" value="">-->
+                            <select class="form-control" id="issue_person" name="issue_person">
+                                {% for user in issue_names %}
+                                    <option>{{ user.profile.name }} </option>
+                                {% endfor %}
+                            </select>
                         </div>
+
+
+
                     </div>
                     <div class="form-group">
                         <label for="svn_path" class="col-sm-2 control-label">svn路径*</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control modal-form" name="svn_path" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="svn_path" value="" >
+                            <input type="text" class="form-control modal-form" name="svn_path" parsley-required="true" parsley-minlength="2"  autocomplete="off" id="svn_path" value="" placeholder="http://svn_path">
                         </div>
                     </div>
                     <div class="form-group">
@@ -326,7 +339,7 @@
 
   // 新增发布模态框展示
   $("#create-issue").click(function(){
-      $(".modal-form").val("")   //输入框的值设为空
+      //$(".modal-form").val("")   //输入框的值设为空
       $("#user_to_group_modal_title").text("新增发布") //修改标题
       $(".modal-form-id").attr("id","add_issue_form")  // 修改id属性值
       var createmodal=$("#create-issue-modal");
@@ -336,6 +349,7 @@
   // 新增发布提交
   $('#add_issue_form').on('submit',function(){
     var str = $('#add_issue_form').serialize();
+    console.log(str)
     //console.log(str)
     $.ajax({
         url:"{% url 'issue_record_add' %}",
@@ -365,8 +379,8 @@
       var dev_person = this_tr.find("td:eq(3)").text()
       var test_person = this_tr.find("td:eq(4)").text()
       var issue_person = this_tr.find("td:eq(5)").text()
-      var svn_path = this_tr.find("td:eq(8)").children().attr("data")
-      var remark = this_tr.find("td:eq(9)").children().attr("data")
+      var svn_path = this_tr.find("td:eq(7)").children().attr("data")
+      var remark = this_tr.find("td:eq(8)").children().attr("data")
       //console.log(remark.children().attr("data"))
       //写入到模态框：
       $("#add_project_name").val(project_name)

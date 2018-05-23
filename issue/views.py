@@ -6,6 +6,7 @@ from django.http import JsonResponse,QueryDict,HttpResponse
 from django.views.generic.list import  MultipleObjectMixin
 from accounts.mixins import PermissionRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import Group
 
 import datetime
 from issue import forms
@@ -51,12 +52,15 @@ class ListIssueRecordView(LoginRequiredMixin,PermissionRequiredMixin,ListView):
     def get_context_data(self, **kwargs):
         context = super(ListIssueRecordView, self).get_context_data(**kwargs)
         context['page_range'] = self.get_pagerange(context['page_obj'])
+        context['issue_names'] = Group.objects.get(name="运维").user_set.all()
+
         # 处理搜索条件
         search_data = self.request.GET.copy()
         try:
             search_data.pop("page")
         except:
             pass
+        print(context)
         context.update(search_data.dict())
         context['search_data'] = "&" + search_data.urlencode()
         return context
