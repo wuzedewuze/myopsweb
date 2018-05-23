@@ -184,7 +184,7 @@ class DownLoadExcelView(LoginRequiredMixin,PermissionRequiredMixin,MultipleObjec
         # 写入标题
         w.write(0, 0, u"发布时间",style_heading)
         w.write(0, 1, u"工程名",style_heading)
-        w.write(0, 2, u"发布内容",style_heading)
+        w.write(0, 2, u"发布项目(同禅道)",style_heading)
         w.write(0, 3, u"开发人员",style_heading)
         w.write(0, 4, u'测试人员',style_heading)
         w.write(0, 5, u'发布人员',style_heading)

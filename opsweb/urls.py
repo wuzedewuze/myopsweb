@@ -24,5 +24,4 @@ urlpatterns = [
     url(r'^accounts/', include("accounts.urls")),
     url(r'^resource/', include("resources.urls")),
     url(r'^issue/', include("issue.urls")),
-    url(r'^test/',include("mytestapp.urls"))
 ]
