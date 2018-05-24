@@ -60,7 +60,7 @@ class ListIssueRecordView(LoginRequiredMixin,PermissionRequiredMixin,ListView):
             search_data.pop("page")
         except:
             pass
-        print(context)
+
         context.update(search_data.dict())
         context['search_data'] = "&" + search_data.urlencode()
         return context
