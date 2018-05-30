@@ -57,7 +57,7 @@
             <th>发布项目(同禅道)</th>
             <th>开发人员</th>
             <th>测试人员</th>
-            <!--<th>发布人员</th>-->
+            <th class="td_hiden">发布人员</th>
             <th>发布状态</th>
             <th>发布时间</th>
             <th>svn路径</th>
@@ -73,7 +73,7 @@
           <td>{{ object.issue_content }}</td>
           <td>{{ object.dev_person }}</td>
           <td>{{ object.test_person }}</td>
-          <!--<td>{{ object.issue_person }}</td>-->
+          <td class="td_hiden">{{ object.issue_person }}</td>
             <td class="status">
                 {% if object.issue_status == "1" %}
                     <span class="glyphicon glyphicon-ok-circle text-success"></span>已发布
@@ -319,6 +319,8 @@
 
 {% block js %}
 <script>
+  //隐藏发布人员
+  $('.td_hiden').hide()
     //日历js
   $('.form_date').datetimepicker({
         language:  'zh-CN',
@@ -378,9 +380,9 @@
       var issue_content = this_tr.find("td:eq(2)").text()
       var dev_person = this_tr.find("td:eq(3)").text()
       var test_person = this_tr.find("td:eq(4)").text()
-      {#var issue_person = this_tr.find("td:eq(5)").text()#}
-      var svn_path = this_tr.find("td:eq(7)").children().attr("data")
-      var remark = this_tr.find("td:eq(8)").children().attr("data")
+      var issue_person = this_tr.find("td:eq(5)").text()
+      var svn_path = this_tr.find("td:eq(8)").children().attr("data")
+      var remark = this_tr.find("td:eq(9)").children().attr("data")
       //console.log(remark.children().attr("data"))
       //写入到模态框：
       $("#add_project_name").val(project_name)
@@ -409,10 +411,10 @@
       var issue_content = this_tr.find("td:eq(2)").text()
       var dev_person = this_tr.find("td:eq(3)").text()
       var test_person = this_tr.find("td:eq(4)").text()
-      // var issue_person = this_tr.find("td:eq(5)").text()
-      var issue_time = this_tr.find("td:eq(6)").text()
-      var svn_path = this_tr.find("td:eq(7)").children().attr("data")
-      var remark = this_tr.find("td:eq(8)").children().attr("data")
+      var issue_person = this_tr.find("td:eq(5)").text()
+      var issue_time = this_tr.find("td:eq(7)").text()
+      var svn_path = this_tr.find("td:eq(8)").children().attr("data")
+      var remark = this_tr.find("td:eq(9)").children().attr("data")
 
       //console.log(remark.children().attr("data"))
       //写入到模态框：
@@ -541,7 +543,7 @@ function(){
  // 显示svn信息按钮
   $(".svn-button").click(function(){
      var show_svn = $(this).attr("data")
-      swal(show_svn)
+      swal({title:"",text: show_svn})
   })
 
 
